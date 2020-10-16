@@ -4,6 +4,7 @@ import { ICartState } from "./types";
 
 const INITIAL_STATE: ICartState = {
   items: [],
+  failedStockCheck: [],
 };
 /**** REGRAS DE NEGÓCIO SÃO FEITAS NO REDUCER *****/
 //a reducer é uma função e ela recebe dois parâmetros (state e action)
@@ -31,6 +32,10 @@ const cart: Reducer<ICartState> = (state = INITIAL_STATE, action) => {
           });
         }
 
+        break;
+      }
+      case "ADD_PRODUCT_TO_CART_FAILURE": {
+        draft.failedStockCheck.push(action.payload.productId);
         break;
       }
       default:

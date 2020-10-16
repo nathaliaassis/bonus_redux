@@ -1,9 +1,21 @@
-import { all, takeLatest, select } from "redux-saga/effects";
-import { addProductToCartRequest } from "./actions";
+import { all, takeLatest, select, call, put } from "redux-saga/effects";
+import {
+  addProductToCartRequest,
+  addProductToCartSuccess,
+  addProductToCartFailure,
+} from "./actions";
 import { IState } from "../../index";
+import api from "../../../services/api";
+
+import { AxiosResponse } from "axios";
 
 //tipando
 type CheckProductStockRequest = ReturnType<typeof addProductToCartRequest>;
+
+interface IStockResponse {
+  id: number;
+  quantity: number;
+}
 
 //aqui como parametro eu recebo todos os dados da action, se eu coloco só action
 //ele nao consegue entender o formato dessa action, devamos tipar da maneira acima
@@ -17,6 +29,17 @@ function* checkAllStock({ payload }: CheckProductStockRequest) {
         ?.quantity ?? 0
     );
   });
+  //o primeiro parametro de call() é qual funcao assincrona queremos executar, o segundo parametro é o paramentro da funcao assincrona que vamos executar
+  const availableStockReponse: AxiosResponse<IStockResponse> = yield call(
+    api.get,
+    `stock/${product.id}`
+  );
+
+  if (availableStockReponse.data.quantity > currentQuantity) {
+    yield put(addProductToCartSuccess(product));
+  } else {
+    yield put(addProductToCartFailure(product.id));
+  }
 }
 
 export default all([
@@ -30,3 +53,7 @@ export default all([
 //takeleading espera a primeira requisicao carregar para retornar algo
 
 // o select serve para eu buscar informações do meu estado
+
+// o put é a mesma coisa que o dispatch, ele dispara uma acao
+
+//todo put tem que ter um yield antes
