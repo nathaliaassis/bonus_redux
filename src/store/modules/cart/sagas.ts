@@ -8,6 +8,7 @@ import { IState } from "../../index";
 import api from "../../../services/api";
 
 import { AxiosResponse } from "axios";
+import { ActionTypes } from "./types";
 
 //tipando
 type CheckProductStockRequest = ReturnType<typeof addProductToCartRequest>;
@@ -44,7 +45,7 @@ function* checkAllStock({ payload }: CheckProductStockRequest) {
 
 export default all([
   //primeiro parametro é qual acao quero escutar e o segundo parametro qual função executar quando a action for disparada
-  takeLatest("ADD_PRODUCT_TO_CART_REQUEST", checkAllStock),
+  takeLatest(ActionTypes.addProductToCartRequest, checkAllStock),
 ]);
 
 //exemplo se o usuario clicar 5 vezes para disparar a acao
